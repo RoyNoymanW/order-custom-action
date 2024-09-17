@@ -15,7 +15,11 @@ import { width, height } from './modal.json';
 // function MyComponent() {
 //   return <button onClick={() => dashboard.openModal('3259acd9-9b12-4f5d-9ace-737a5eb73876')}>Open Modal</button>;
 // }
-const Modal: FC = () => {
+const Modal: FC<{orderId: string}> = (props) => {
+
+    const orderId = props.orderId;
+    console.log('orderId:', orderId);
+
     const [selectedProduct, setSelectedProduct] = useState('');
 
     const productOptions = [
