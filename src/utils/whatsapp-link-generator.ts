@@ -12,3 +12,5 @@ const generateWhatsappUpsellMessage = (contactName: string, productId: string, p
     return `Hi ${contactName}, we want to offer you an upsell for ${productName} for 50% off with this coupon code: ${couponCode}. 
     Click here to purchase: ${generateProductLink(productId)}`;
 }
+
+
