@@ -6,7 +6,7 @@ import {
     Box,
     Image,
     Button,
-    CustomModalLayout, Dropdown, InputArea, FormField,
+    CustomModalLayout, Dropdown, InputArea, FormField, Divider,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 import {generateWhatsappLink, generateWhatsappUpsellMessage} from '../../../utils/whatsapp-link-generator';
@@ -94,9 +94,13 @@ const Modal: FC<{ orderId: string }> = (props) => {
                                 }
                             }
                         />
+                        <Box marginTop={'medium'}>
+                            <Divider skin="light" />
+                        </Box>
                         <Box marginTop="medium" align="center">
                             <FormField label="WhatsApp message to the user">
                                 <InputArea
+                                    minHeight={'230px'}
                                     placeholder=""
                                     rows={6}
                                     maxLength={500}
