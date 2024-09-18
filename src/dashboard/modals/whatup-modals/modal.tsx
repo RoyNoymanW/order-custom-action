@@ -89,7 +89,9 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 subtitle="selcet products to resale"
                 content={
                     <Box direction="vertical" align="stretch" margin="medium">
-                        <Text weight="bold">Select an item:</Text>
+                        <Box marginBottom='small'>
+                            <Text weight='thin' size="small">Select an item:</Text>
+                        </Box>
                         <RadioGroup
                             value={selectedProduct.id || ''}
                             onChange={ (prodId) => {

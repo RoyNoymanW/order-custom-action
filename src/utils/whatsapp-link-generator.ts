@@ -13,7 +13,7 @@ const generateProductLink = (productName: string) => {
 
 export const generateWhatsappUpsellMessage = (contactName: string, productName: string, couponCode: string) => {
     return `*Hey ${contactName}!*\n
-Hope you're still enjoying your ${productName}! =] Need a new one?\n
+Hope you're still enjoying your ${productName}! =]\n Need a new one?\n
 Grab it now and get *10% OFF* with the code *${couponCode}*. Just tap here to order: ${generateProductLink(productName)}.\n
 Don't miss out!`;
 }
