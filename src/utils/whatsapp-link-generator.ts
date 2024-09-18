@@ -1,6 +1,6 @@
 
-export const generateWhatsappLink = (contactName: string, productId: string, productName: string, couponCode: string, phone: string, productLink: string) => {
-    const message: string = generateWhatsappUpsellMessage(contactName, productId, productName, couponCode, productLink)
+export const generateWhatsappLink = (contactName: string, productName: string, couponCode: string, phone: string, controlledMessage?: string) => {
+    let message = controlledMessage || generateWhatsappUpsellMessage(contactName, productName, couponCode);
     const whatsappLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     console.log(whatsappLink)
     return whatsappLink
@@ -11,7 +11,7 @@ const generateProductLink = (productName: string) => {
     return `https://etaybarzilay.wixstudio.io/order-custom-actions/product-page/${productRoute}`;
 }
 
-const generateWhatsappUpsellMessage = (contactName: string, productId: string, productName: string, couponCode: string) => {
+export const generateWhatsappUpsellMessage = (contactName: string, productName: string, couponCode: string) => {
     let emoji = '😊';
     return `*Hey ${contactName}!*\n
 Hope you're still enjoying your ${productName}! ${emoji} Need a new one?\n
