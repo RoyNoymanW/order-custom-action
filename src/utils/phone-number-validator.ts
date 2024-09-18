@@ -12,3 +12,10 @@ export const validateAndEditPhoneNumber = (phoneNumber: string | null | undefine
     if (!phoneNumber) return DEFAULT_PHONE_NUMBER;
     return addCountryCodeIfMissing(phoneNumber!);
 }
+
+export const generateContactName = (firstName: string | null | undefined, lastName: string | null | undefined) => {
+    if (!firstName) return lastName;
+    console.log("first name: ", firstName);
+    console.log("last name: ", lastName);
+    return `${firstName} ${lastName}`
+}
