@@ -108,8 +108,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                                 return (<RadioGroup.Radio value={product.id}>
                                     <Box gap={2} verticalAlign="middle">
                                         <Image
-                                            width={'30px'}
-                                            height={'30px'}
+                                            width={'45px'}
+                                            height={'45px'}
                                             src={getImageFromWixMedia(product.image)} />
                                         <Box direction="vertical">
                                             <Text weight="normal">{product.value}</Text>
