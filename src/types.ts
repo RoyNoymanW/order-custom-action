@@ -7,6 +7,16 @@ export type Settings = {
 };
 
 export type OrderDetails = {
+  contactDetails :ContactDetails | null;
+  orderProducts: ProductsDetails[] | undefined;
+}
+export type ContactDetails ={
   phoneNumber: string | null | undefined;
-  orderProducts: (string | undefined)[] | undefined
+  firstName: string | null | undefined;
+  lastName: string | null | undefined;
+};
+export type ProductsDetails = {
+  productName: string | undefined;
+  image: string | undefined;
+  catalogItemId: string | undefined;
 }
