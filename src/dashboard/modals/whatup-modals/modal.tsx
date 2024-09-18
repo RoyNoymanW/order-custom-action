@@ -12,16 +12,8 @@ import '@wix/design-system/styles.global.css';
 import {generateWhatsappLink} from '../../../utils/whatsapp-link-generator';
 import {httpClient} from "@wix/essentials";
 import {getDetailsFromOrder} from "../../../backend/orders";
-import {OrderDetails, type Settings} from "../../../types";
-import {validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
+import {generateContactName, validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
 import {WindowOpener} from "../../../utils/open-window-for-messages";
-
-// To open your modal, call `openModal` with your modal id.
-// e.g.
-// import { dashboard } from '@wix/dashboard';
-// function MyComponent() {
-//   return <button onClick={() => dashboard.openModal('3259acd9-9b12-4f5d-9ace-737a5eb73876')}>Open Modal</button>;
-// }
 
 const Modal: FC<{ orderId: string }> = (props) => {
     const orderId = props.orderId;
@@ -57,6 +49,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 const mappedOptions = details.orderProducts?.map(productDetails => ({id: productDetails.catalogItemId!, value: productDetails.productName!}))
                 setProductOptionsList(mappedOptions!)
                 setPhoneNumber(validateAndEditPhoneNumber(details.contactDetails?.phoneNumber))
+                setContactName(generateContactName(details.contactDetails?.firstName,details.contactDetails?.lastName))
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
@@ -71,14 +64,12 @@ const Modal: FC<{ orderId: string }> = (props) => {
     return (
         <WixDesignSystemProvider features={{newColorsBranding: true}}>
             <CustomModalLayout
-                // width={width}
-                // maxHeight={height}
                 primaryButtonText="Send Message"
                 secondaryButtonText="Cancel"
                 onCloseButtonClick={() => dashboard.closeModal()}
                 primaryButtonOnClick={() => {
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber)
+                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
