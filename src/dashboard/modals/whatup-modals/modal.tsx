@@ -27,8 +27,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
     const orderId = props.orderId;
     console.log('orderId:', orderId);
 
-    const [selectedProduct, setSelectedProduct] = useState('');
-
+    const [selectedProduct, setSelectedProduct] = useState<{id:string,value:string}>({id:"",value: ""});
+    console.log("initial: ", selectedProduct)
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
     const [contactName, setContactName] = useState<string | null | undefined>(undefined);
@@ -77,9 +77,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 secondaryButtonText="Cancel"
                 onCloseButtonClick={() => dashboard.closeModal()}
                 primaryButtonOnClick={() => {
-                    console.log('Selected product:', selectedProduct);
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct,selectedProduct,"BUYAGAIN2024",phoneNumber)
+                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
@@ -91,8 +90,13 @@ const Modal: FC<{ orderId: string }> = (props) => {
                         <Dropdown
                             placeholder="Select a product"
                             options={productOptionsList}
-                            selectedId={selectedProduct}
-                            onSelect={(option) => setSelectedProduct(option.value)}
+                            selectedId={selectedProduct.id}
+                            onSelect={
+                                (option) => {
+                                    console.log("option:" ,option)
+                                    setSelectedProduct(selectedProduct)
+                                }
+                            }
                         />
                         <Box marginTop="medium" align="center">
                             <Text>Wix CLI Modal</Text>
