@@ -16,6 +16,7 @@ import {width, height} from './modal.json';
 import {httpClient} from "@wix/essentials";
 import {getDetailsFromOrder} from "../../../backend/orders";
 import {OrderDetails, type Settings} from "../../../types";
+import {validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
 
 // To open your modal, call `openModal` with your modal id.
 // e.g.
@@ -23,8 +24,6 @@ import {OrderDetails, type Settings} from "../../../types";
 // function MyComponent() {
 //   return <button onClick={() => dashboard.openModal('3259acd9-9b12-4f5d-9ace-737a5eb73876')}>Open Modal</button>;
 // }
-
-const DEFAULT_PHONE_NUMBER = '972525555555';
 
 const Modal: FC<{ orderId: string }> = (props) => {
     const orderId = props.orderId;
@@ -46,10 +45,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 const order = await response.json()
                 const details =  getDetailsFromOrder(order)
                 const mappedOptions = details.orderProducts?.map(productName => ({id: productName!, value: productName!}))
-                const phoneNumberWithCountry =
                 setProductOptionsList(mappedOptions!)
-                setPhoneNumber(addCountryCodeIfMissing(details.phoneNumber))
-                // setPhoneNumber("972527704448")
+                setPhoneNumber(validateAndEditPhoneNumber(details.phoneNumber))
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
@@ -119,15 +116,5 @@ const renderOrder = async (orderId: string) => {
         });
     };
 }
-
-const addCountryCodeIfMissing = (phoneNumber: string | null | undefined): string => {
-    console.log("phoneNumber: ", phoneNumber)
-    if (!phoneNumber) return DEFAULT_PHONE_NUMBER;
-
-    // Remove all dashes from the phone number
-    const cleanPhoneNumber = phoneNumber.replace(/-/g, '');
-    if (cleanPhoneNumber.startsWith('972')) return cleanPhoneNumber;
-    return `972${cleanPhoneNumber}`;
-};
 
 export default Modal;
