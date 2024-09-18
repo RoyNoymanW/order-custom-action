@@ -92,9 +92,9 @@ const Modal: FC<{ orderId: string }> = (props) => {
                             options={productOptionsList}
                             selectedId={selectedProduct.id}
                             onSelect={
-                                (option) => {
+                                (option:{id:string,value:string}) => {
                                     console.log("option:" ,option)
-                                    setSelectedProduct(selectedProduct)
+                                    setSelectedProduct(option)
                                 }
                             }
                         />
