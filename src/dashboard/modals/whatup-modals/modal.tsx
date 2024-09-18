@@ -14,6 +14,7 @@ import {httpClient} from "@wix/essentials";
 import {getDetailsFromOrder} from "../../../backend/orders";
 import {generateContactName, validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
 import {WindowOpener} from "../../../utils/open-window-for-messages";
+import { media } from "@wix/sdk";
 
 const Modal: FC<{ orderId: string }> = (props) => {
     const orderId = props.orderId;
@@ -102,7 +103,10 @@ const Modal: FC<{ orderId: string }> = (props) => {
                                 console.log("product is: ",product)
                                 return (<RadioGroup.Radio value={product.id}>
                                     <Box gap={2} verticalAlign="middle">
-                                        <Image src={product.image} />,
+                                        <Image
+                                            width={'30px'}
+                                            height={'30px'}
+                                            src={getImageFromWixMedia(product.image)} />
                                         <Box direction="vertical">
                                             <Text weight="normal">{product.value}</Text>
                                         </Box>
@@ -149,5 +153,9 @@ const renderOrder = async (orderId: string) => {
             type: 'error',
         });
     };
+}
+
+const getImageFromWixMedia = (productImage:string) => {
+    return media.getImageUrl(productImage).url;
 }
 export default Modal;
