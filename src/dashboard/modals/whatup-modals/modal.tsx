@@ -6,7 +6,7 @@ import {
     Box,
     Image,
     Button,
-    CustomModalLayout, RadioGroup, Radio, Avatar, InputArea, FormField, Divider,
+    CustomModalLayout, RadioGroup, Radio, Avatar, InputArea, FormField, Divider, Loader,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 import {generateWhatsappLink, generateWhatsappUpsellMessage} from '../../../utils/whatsapp-link-generator';
@@ -26,6 +26,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
     const [contactName, setContactName] = useState<string | null | undefined>(undefined);
     const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const controlledMessageForInputArea = selectedProduct.id ?
         controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, "BUYAGAIN2024") :
@@ -45,6 +46,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setLoading(true);
             try {
                 const callGetOrderById = async () => await httpClient.fetchWithAuth(`${import.meta.env.BASE_API_URL}/orders?orderId=${orderId}`, {
                     method: 'GET',
@@ -57,6 +59,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 setProductOptionsList(mappedOptions!)
                 setPhoneNumber(validateAndEditPhoneNumber(details.contactDetails?.phoneNumber))
                 setContactName(generateContactName(details.contactDetails?.firstName,details.contactDetails?.lastName))
+                setLoading(false);
+                setSelectedProduct(mappedOptions![0]);
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
@@ -120,7 +124,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                         <Box marginTop="medium" align="center">
                             <FormField label="WhatsApp message to the user">
                                 <InputArea
-                                    minHeight={'230px'}
+                                    minHeight={'270px'}
                                     placeholder=""
                                     rows={6}
                                     maxLength={500}
