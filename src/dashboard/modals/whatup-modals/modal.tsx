@@ -6,7 +6,7 @@ import {
     Box,
     Image,
     Button,
-    CustomModalLayout, RadioGroup, Radio, Avatar, InputArea, FormField, Divider, Loader,
+    CustomModalLayout, RadioGroup, Radio, Avatar, InputArea, FormField, Divider, Loader, Dropdown,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 import {generateWhatsappLink, generateWhatsappUpsellMessage} from '../../../utils/whatsapp-link-generator';
@@ -17,19 +17,22 @@ import {WindowOpener} from "../../../utils/open-window-for-messages";
 import { media } from "@wix/sdk";
 
 const Modal: FC<{ orderId: string }> = (props) => {
+    const couponsConstants = ["BUYAGAINBIGTIME","BUYAGAIN2024"]
     const orderId = props.orderId;
     console.log('orderId:', orderId);
 
     const [selectedProduct, setSelectedProduct] = useState<{id:string,value:string,image:string}>({id:"",value: "",image:""});
     console.log("initial: ", selectedProduct)
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string,image:string}[]>([]);
+    const [selectedCoupon, setSelectedCoupon] = useState<{id:string,value:string}>({id:couponsConstants[0],value: couponsConstants[0]});
+    const [couponsList, setCouponsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
     const [contactName, setContactName] = useState<string | null | undefined>(undefined);
     const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState('');
     const [loading, setLoading] = useState(true);
 
     const controlledMessageForInputArea = selectedProduct.id ?
-        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, "BUYAGAIN2024") :
+        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, selectedCoupon.value) :
         '';
 
     const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string, message?: string) => {
@@ -61,6 +64,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 setContactName(generateContactName(details.contactDetails?.firstName,details.contactDetails?.lastName))
                 setLoading(false);
                 setSelectedProduct(mappedOptions![0]);
+                const mappedCoupons = couponsConstants.map(c => ({id:c,value:c}))
+                setCouponsList(mappedCoupons)
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
@@ -80,7 +85,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 onCloseButtonClick={() => dashboard.closeModal()}
                 primaryButtonOnClick={() => {
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber, controlledMessageForInputArea)
+                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,selectedCoupon.value,phoneNumber, controlledMessageForInputArea)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
@@ -122,6 +127,18 @@ const Modal: FC<{ orderId: string }> = (props) => {
                         </RadioGroup>
                         <Box marginTop={'medium'}>
                             <Divider skin="light" />
+                        </Box>
+                        <Box marginTop="medium" align="center">
+                            <Text weight="bold">Select a coupon:</Text>
+                            <Dropdown
+                                placeholder="Select a coupon"
+                                options={couponsList}
+                                selectedId={selectedCoupon.id}
+                                onSelect={(option) => {
+                                    console.log(option);
+                                    setSelectedCoupon(option)
+                                }}
+                            />
                         </Box>
                         <Box marginTop="medium" align="center">
                             <FormField label="WhatsApp message to the user">
