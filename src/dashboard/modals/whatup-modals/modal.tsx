@@ -10,13 +10,11 @@ import {
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
 import {generateWhatsappLink} from '../../../utils/whatsapp-link-generator';
-
-
-import {width, height} from './modal.json';
 import {httpClient} from "@wix/essentials";
 import {getDetailsFromOrder} from "../../../backend/orders";
 import {OrderDetails, type Settings} from "../../../types";
 import {validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
+import {WindowOpener} from "../../../utils/open-window-for-messages";
 
 // To open your modal, call `openModal` with your modal id.
 // e.g.
@@ -34,6 +32,17 @@ const Modal: FC<{ orderId: string }> = (props) => {
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
 
+    const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string) => {
+        const windowOpener = WindowOpener.getInstance();
+        const whatsappLink = generateWhatsappLink(
+            contactName,
+            productId,
+            productName,
+            couponCode,
+            phoneNumber
+        );
+        windowOpener.openLink(whatsappLink);
+    };
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -75,8 +84,8 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 primaryButtonOnClick={() => {
                     console.log('Selected product:', selectedProduct);
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappMessage = generateWhatsappLink("Roy",selectedProduct,selectedProduct,"50%SPECIALOFFER",phoneNumber)
-                    console.log(whatsappMessage)
+                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct,selectedProduct,"50%SPECIALOFFER",phoneNumber)
+                    console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
                 secondaryButtonOnClick={() => dashboard.closeModal()}

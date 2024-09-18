@@ -1,7 +1,9 @@
 
 export const generateWhatsappLink = (contactName: string, productId: string, productName: string, couponCode: string, phone: string) => {
     const message: string = generateWhatsappUpsellMessage(contactName, productId, productName, couponCode)
-    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    const whatsappLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    console.log(whatsappLink)
+    return whatsappLink
 }
 
 const generateProductLink = (productId: string) => {
