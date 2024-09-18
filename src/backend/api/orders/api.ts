@@ -1,4 +1,3 @@
-import {orders} from '@wix/ecom';
 import {getOrder} from "../../orders";
 
 export async function GET(req: Request) {
