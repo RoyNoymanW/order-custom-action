@@ -2,7 +2,7 @@
   "$schema": "https://dev.wix.com/wix-cli/schemas/dashboard-menu-plugin.json",
   "id": "440141de-a590-45f6-87a3-0640a8d845ca",
   "title": "Whats Upsell",
-  "iconKey": "Payment",
+  "iconKey": "Whatsapp",
   "extends": "7c82ce37-3890-4613-9364-03a363c92ebe",
   "action": {
     "openModal": {
