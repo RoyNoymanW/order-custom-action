@@ -17,14 +17,12 @@ import {WindowOpener} from "../../../utils/open-window-for-messages";
 import { media } from "@wix/sdk";
 
 const Modal: FC<{ orderId: string }> = (props) => {
-    const couponsConstants = ["BUYAGAINBIGTIME","BUYAGAIN2024"]
+    const couponsConstants = [{id:"50",value:"BUYAGAINBIGTIME"}, {id:"10",value: "BUYAGAIN2024"}]
     const orderId = props.orderId;
-    console.log('orderId:', orderId);
 
     const [selectedProduct, setSelectedProduct] = useState<{id:string,value:string,image:string}>({id:"",value: "",image:""});
-    console.log("initial: ", selectedProduct)
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string,image:string}[]>([]);
-    const [selectedCoupon, setSelectedCoupon] = useState<{id:string,value:string}>({id:couponsConstants[0],value: couponsConstants[0]});
+    const [selectedCoupon, setSelectedCoupon] = useState<{id:string,value:string}>({id:couponsConstants[0].id,value: couponsConstants[0].value});
     const [couponsList, setCouponsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
     const [contactName, setContactName] = useState<string | null | undefined>(undefined);
@@ -32,15 +30,16 @@ const Modal: FC<{ orderId: string }> = (props) => {
     const [loading, setLoading] = useState(true);
 
     const controlledMessageForInputArea = selectedProduct.id ?
-        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, selectedCoupon.value) :
+        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, selectedCoupon.value,selectedCoupon.id) :
         '';
 
-    const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string, message?: string) => {
+    const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string,couponPercentageValue:string, phoneNumber: string, message?: string) => {
         const windowOpener = WindowOpener.getInstance();
         const whatsappLink = generateWhatsappLink(
             contactName,
             productName,
             couponCode,
+            couponPercentageValue,
             phoneNumber,
             message
         );
@@ -57,14 +56,13 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 const response = await callGetOrderById()
                 const order = await response.json()
                 const details =  getDetailsFromOrder(order)
-                console.log("details.orderProducts useEffect: ", details.orderProducts)
                 const mappedOptions = details.orderProducts?.map(productDetails => ({id: productDetails.catalogItemId!, value: productDetails.productName!,image:productDetails.image!}))
                 setProductOptionsList(mappedOptions!)
                 setPhoneNumber(validateAndEditPhoneNumber(details.contactDetails?.phoneNumber))
                 setContactName(generateContactName(details.contactDetails?.firstName,details.contactDetails?.lastName))
                 setLoading(false);
                 setSelectedProduct(mappedOptions![0]);
-                const mappedCoupons = couponsConstants.map(c => ({id:c,value:c}))
+                const mappedCoupons = couponsConstants.map(c => ({id:c.id,value:c.value}))
                 setCouponsList(mappedCoupons)
             } catch (error) {
                 dashboard.showToast({
@@ -84,8 +82,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 secondaryButtonText="Cancel"
                 onCloseButtonClick={() => dashboard.closeModal()}
                 primaryButtonOnClick={() => {
-                    console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,selectedCoupon.value,phoneNumber, controlledMessageForInputArea)
+                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,selectedCoupon.value,selectedCoupon.id,phoneNumber, controlledMessageForInputArea)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
@@ -93,54 +90,50 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 title="Upsell with whatsup"
                 subtitle="selcet products to resale"
                 content={
-                    <Box direction="vertical" align="stretch" margin="medium">
-                        <Box marginBottom='small'>
-                            <Text weight='thin' size="small">Select an item:</Text>
-                        </Box>
-                        <RadioGroup
-                            value={selectedProduct.id || ''}
-                            onChange={ (prodId) => {
+                    <Box direction="vertical" align="stretch" margin="medium" gap={4}>
+                        <FormField label={"Select an item:"}>
+                            <RadioGroup
+                                value={selectedProduct.id || ''}
+                                onChange={ (prodId) => {
                                     const product = productOptionsList.find(p => {
-                                        console.log('prodId', prodId);
-                                        console.log('p.id', p.id);
                                         return p.id === prodId;
                                     });
-                                    console.log("product inside on change", product)
                                     setSelectedProduct(product);
                                 }
-                            }
-                        >
-                            {productOptionsList.map((product) => {
-                                console.log("product is: ",product)
-                                return (<RadioGroup.Radio value={product.id}>
-                                    <Box gap={2} verticalAlign="middle">
-                                        <Image
-                                            width={'45px'}
-                                            height={'45px'}
-                                            src={getImageFromWixMedia(product.image)} />
-                                        <Box direction="vertical">
-                                            <Text weight="normal">{product.value}</Text>
+                                }
+                            >
+                                {productOptionsList.map((product) => {
+                                    return (<RadioGroup.Radio value={product.id}>
+                                        <Box gap={2} verticalAlign="middle">
+                                            <Image
+                                                width={'45px'}
+                                                height={'45px'}
+                                                src={getImageFromWixMedia(product.image)} />
+                                            <Box direction="vertical">
+                                                <Text weight="normal">{product.value}</Text>
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </RadioGroup.Radio>)
+                                    </RadioGroup.Radio>)
                                 })}
-                        </RadioGroup>
-                        <Box marginTop={'medium'}>
-                            <Divider skin="light" />
-                        </Box>
-                        <Box marginTop="medium" align="center">
-                            <Text weight="bold">Select a coupon:</Text>
+                            </RadioGroup>
+                        </FormField>
+                        <Divider skin="light" />
+                        <Box width={'50%'}>
+                        <FormField
+                            label={"Select a coupon:"}
+                            inputWidth={'50%'}>
                             <Dropdown
                                 placeholder="Select a coupon"
                                 options={couponsList}
                                 selectedId={selectedCoupon.id}
                                 onSelect={(option) => {
-                                    console.log(option);
                                     setSelectedCoupon(option)
                                 }}
                             />
+                        </FormField>
                         </Box>
-                        <Box marginTop="medium" align="center">
+
+                        <Divider skin="light" />
                             <FormField label="WhatsApp message to the user">
                                 <InputArea
                                     minHeight={'270px'}
@@ -153,7 +146,6 @@ const Modal: FC<{ orderId: string }> = (props) => {
                                     onChange={(e) => setControlledWhatsappMessage(e.target.value)}
                                 />
                             </FormField>
-                        </Box>
                     </Box>
                 }
             />
