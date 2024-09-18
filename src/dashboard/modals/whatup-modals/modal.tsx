@@ -84,7 +84,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 primaryButtonOnClick={() => {
                     console.log('Selected product:', selectedProduct);
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct,selectedProduct,"50%SPECIALOFFER",phoneNumber)
+                    const whatsappResponse = handleWhatsappMessage("Roy",selectedProduct,selectedProduct,"BUYAGAIN2024",phoneNumber)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}

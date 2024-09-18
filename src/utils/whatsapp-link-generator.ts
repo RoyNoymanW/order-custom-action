@@ -7,12 +7,15 @@ export const generateWhatsappLink = (contactName: string, productId: string, pro
 }
 
 const generateProductLink = (productId: string) => {
-    return 'https://www.example.com/products/' + productId;
+    return `https://etaybarzilay.wixstudio.io/order-custom-actions/product-page/${productId}`;
 }
 
 const generateWhatsappUpsellMessage = (contactName: string, productId: string, productName: string, couponCode: string) => {
-    return `Hi ${contactName}, we want to offer you an upsell for ${productName} for 50% off with this coupon code: ${couponCode}. 
-    Click here to purchase: ${generateProductLink(productId)}`;
+    let emoji = '😊';
+    return `*Hey ${contactName}!*\n
+Hope you're still enjoying your ${productName}! ${emoji} Need a new one?\n
+Grab it now and get *10% OFF* with the code *${couponCode}*. Just tap here to order: ${generateProductLink(productId)}.\n
+Don't miss out!`;
 }
 
 
