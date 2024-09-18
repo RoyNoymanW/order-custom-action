@@ -6,10 +6,10 @@ import {
     Box,
     Image,
     Button,
-    CustomModalLayout, Dropdown,
+    CustomModalLayout, Dropdown, InputArea, FormField,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
-import {generateWhatsappLink} from '../../../utils/whatsapp-link-generator';
+import {generateWhatsappLink, generateWhatsappUpsellMessage} from '../../../utils/whatsapp-link-generator';
 import {httpClient} from "@wix/essentials";
 import {getDetailsFromOrder} from "../../../backend/orders";
 import {generateContactName, validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
@@ -24,15 +24,20 @@ const Modal: FC<{ orderId: string }> = (props) => {
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
     const [contactName, setContactName] = useState<string | null | undefined>(undefined);
+    const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState('');
 
-    const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string) => {
+    const controlledMessageForInputArea = selectedProduct.id ?
+        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName, selectedProduct.value, "BUYAGAIN2024") :
+        '';
+
+    const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string, message?: string) => {
         const windowOpener = WindowOpener.getInstance();
         const whatsappLink = generateWhatsappLink(
             contactName,
-            productId,
             productName,
             couponCode,
             phoneNumber,
+            message
         );
         windowOpener.openLink(whatsappLink);
     };
@@ -69,7 +74,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 onCloseButtonClick={() => dashboard.closeModal()}
                 primaryButtonOnClick={() => {
                     console.log('Found selected product ???:', selectedProduct);
-                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber)
+                    const whatsappResponse = handleWhatsappMessage(contactName,selectedProduct.id,selectedProduct.value,"BUYAGAIN2024",phoneNumber, controlledMessageForInputArea)
                     console.log(whatsappResponse)
                     dashboard.closeModal();
                 }}
@@ -90,7 +95,17 @@ const Modal: FC<{ orderId: string }> = (props) => {
                             }
                         />
                         <Box marginTop="medium" align="center">
-                            <Text>Wix CLI Modal</Text>
+                            <FormField label="WhatsApp message to the user">
+                                <InputArea
+                                    placeholder=""
+                                    rows={6}
+                                    maxLength={500}
+                                    hasCounter
+                                    resizable
+                                    value={controlledMessageForInputArea}
+                                    onChange={(e) => setControlledWhatsappMessage(e.target.value)}
+                                />
+                            </FormField>
                         </Box>
                     </Box>
                 }
