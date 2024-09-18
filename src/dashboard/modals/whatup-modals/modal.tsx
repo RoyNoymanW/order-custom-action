@@ -31,6 +31,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
 
     const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string}[]>([]);
     const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
+    const [contactName, setContactName] = useState<string | null | undefined>(undefined);
 
     const handleWhatsappMessage = async (contactName: string, productId: string, productName: string, couponCode: string, phoneNumber: string) => {
         const windowOpener = WindowOpener.getInstance();
@@ -39,7 +40,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
             productId,
             productName,
             couponCode,
-            phoneNumber
+            phoneNumber,
         );
         windowOpener.openLink(whatsappLink);
     };
@@ -53,9 +54,9 @@ const Modal: FC<{ orderId: string }> = (props) => {
                 const response = await callGetOrderById()
                 const order = await response.json()
                 const details =  getDetailsFromOrder(order)
-                const mappedOptions = details.orderProducts?.map(productName => ({id: productName!, value: productName!}))
+                const mappedOptions = details.orderProducts?.map(productDetails => ({id: productDetails.catalogItemId!, value: productDetails.productName!}))
                 setProductOptionsList(mappedOptions!)
-                setPhoneNumber(validateAndEditPhoneNumber(details.phoneNumber))
+                setPhoneNumber(validateAndEditPhoneNumber(details.contactDetails?.phoneNumber))
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
@@ -66,12 +67,6 @@ const Modal: FC<{ orderId: string }> = (props) => {
 
         fetchProducts();
     }, []);
-
-    const productOptions = [
-        {id: 'product1', value: 'Product 1'},
-        {id: 'product2', value: 'Product 2'},
-        {id: 'product3', value: 'Product 3'},
-    ];
 
     return (
         <WixDesignSystemProvider features={{newColorsBranding: true}}>
@@ -97,7 +92,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                             placeholder="Select a product"
                             options={productOptionsList}
                             selectedId={selectedProduct}
-                            onSelect={(option) => setSelectedProduct(option.id)}
+                            onSelect={(option) => setSelectedProduct(option.value)}
                         />
                         <Box marginTop="medium" align="center">
                             <Text>Wix CLI Modal</Text>
