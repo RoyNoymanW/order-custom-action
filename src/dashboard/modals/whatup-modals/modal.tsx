@@ -66,7 +66,7 @@ const Modal: FC<{ orderId: string }> = (props) => {
                     message: 'Failed to Update Settings',
                     type: 'error',
                 });
-            };
+            }
         }
 
         fetchProducts();
