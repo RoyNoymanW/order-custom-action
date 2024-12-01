@@ -1,4 +1,4 @@
-import React, {type FC, useEffect, useState, useMemo} from 'react';
+import React, {type FC, useEffect, useState} from 'react';
 import {dashboard} from '@wix/dashboard';
 import {
     WixDesignSystemProvider,

@@ -2,6 +2,7 @@
 export const generateWhatsappLink = (contactName: string, productName: string, phone: string, controlledMessage?: string) => {
     let message = controlledMessage || generateWhatsappUpsellMessage(contactName, productName);
     const whatsappLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    console.log(whatsappLink);
     return whatsappLink
 }
 
