@@ -8,8 +8,9 @@ export const generateWhatsappLink = (contactName: string, productName: string, p
 
 const generateProductLink = (productName: string) => {
     const productRoute = productName.split(' ').join('-').toLowerCase();
-    // This is a sample link, you should replace it with your own product page link
-    return `https://etaybarzilay.wixstudio.io/order-custom-actions/product-page/${productRoute}`;
+    // This is a sample url, you should replace it with your own site url
+    const siteUrl = "https://etaybarzilay.wixstudio.io/order-custom-actions";
+    return `${siteUrl}/product-page/${productRoute}`;
 }
 
 export const generateWhatsappUpsellMessage = (contactName: string, productName: string) => {
