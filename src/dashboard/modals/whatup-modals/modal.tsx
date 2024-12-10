@@ -1,5 +1,8 @@
-import React, {type FC, useEffect, useState} from 'react';
-import {dashboard} from '@wix/dashboard';
+import React, { type FC, useEffect, useState } from 'react';
+import { dashboard } from '@wix/dashboard';
+import { httpClient } from "@wix/essentials";
+import { media } from "@wix/sdk";
+import { orders } from '@wix/ecom';
 import {
     WixDesignSystemProvider,
     Text,
@@ -14,125 +17,132 @@ import {
     SectionHelper,
 } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
-import {generateWhatsappLink, generateWhatsappUpsellMessage} from '../../../utils/whatsapp-link-generator';
-import {httpClient} from "@wix/essentials";
-import {getDetailsFromOrder} from "../../../backend/orders";
-import {generateContactName, validateAndEditPhoneNumber} from "../../../utils/phone-number-validator";
-import {WindowOpener} from "../../../utils/open-window-for-messages";
-import { media } from "@wix/sdk";
+import { height, width, title } from './modal.json';
+import { getContactNameFromOrder, getPhoneNumberFromOrder } from "../../../utils/get-details-from-order";
+import { generateWhatsappLink, generateWhatsappUpsellMessage } from '../../../utils/whatsapp-link-generator';
 
-const Modal: FC<{ orderId: string }> = (props) => {
-    const orderId = props.orderId;
+type Product = {
+    id: string;
+    value: string;
+    image: string;
+};
 
-    const [selectedProduct, setSelectedProduct] = useState<{id:string,value:string,image:string}>({id:"",value: "",image:""});
-    const [productOptionsList, setProductOptionsList] = useState<{id:string,value:string,image:string}[]>([]);
-    const [phoneNumber, setPhoneNumber] = useState<string | null | undefined>(undefined);
-    const [contactName, setContactName] = useState<string | null | undefined>(undefined);
-    const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState('');
-    const [loading, setLoading] = useState(true);
-
-    const controlledMessageForInputArea = selectedProduct.id ?
-        controlledWhatsappMessage || generateWhatsappUpsellMessage(contactName!, selectedProduct.value) : '';
-
-    const handleWhatsappMessage = async (contactName: string, productName: string, phoneNumber: string, message?: string) => {
-        const windowOpener = WindowOpener.getInstance();
-        const whatsappLink = generateWhatsappLink(
-            contactName,
-            productName,
-            phoneNumber,
-            message
-        );
-        windowOpener.openLink(whatsappLink);
-    };
+const Modal: FC<{ orderId: string }> = ({ orderId }) => {
+    const [loading, setLoading] = useState<boolean>(true);
+    const [selectedProduct, setSelectedProduct] = useState<Product>();
+    const [productOptionsList, setProductOptionsList] = useState<Product[]>([]);
+    const [phoneNumber, setPhoneNumber] = useState<string>('');
+    const [contactName, setContactName] = useState<string>('');
+    const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState<string>(
+        selectedProduct ? generateWhatsappUpsellMessage(contactName, selectedProduct.value) : ''
+    );
 
     useEffect(() => {
         const fetchProducts = async () => {
-            setLoading(true);
             try {
-                const callGetOrderById = async () => await httpClient.fetchWithAuth(`${import.meta.env.BASE_API_URL}/orders?orderId=${orderId}`, {
-                    method: 'GET',
+                const response = await httpClient.fetchWithAuth(`${import.meta.env.BASE_API_URL}/order?orderId=${orderId}`);
+                const order: orders.Order = await response.json();
+                const mappedOptions = (order.lineItems ?? []).map(lineItem => {
+                    return {
+                        id: lineItem.catalogReference?.catalogItemId ?? '',
+                        value: lineItem.productName?.original ?? '',
+                        image: lineItem.image ?? '',
+                    };
                 });
-                const response = await callGetOrderById()
-                const order = await response.json()
-                const details =  getDetailsFromOrder(order)
-                const mappedOptions = details.orderProducts?.map(productDetails => ({id: productDetails.catalogItemId!, value: productDetails.productName!,image:productDetails.image!}))
-                setProductOptionsList(mappedOptions!)
-                setPhoneNumber(validateAndEditPhoneNumber(details.contactDetails?.phoneNumber as string));
-                setContactName(generateContactName(details.contactDetails?.firstName as string, details.contactDetails?.lastName as string))
-                setSelectedProduct(mappedOptions![0]);
+
+                setProductOptionsList(mappedOptions);
+                setPhoneNumber(getPhoneNumberFromOrder(order));
+                setContactName(getContactNameFromOrder(order));
+                setSelectedProduct(mappedOptions?.[0]);
                 setLoading(false);
             } catch (error) {
                 dashboard.showToast({
                     message: 'Failed to Update Settings',
                     type: 'error',
                 });
-            }
-        }
+            };
+        };
 
         fetchProducts();
     }, []);
 
     return (
-        <WixDesignSystemProvider features={{newColorsBranding: true}}>
+        <WixDesignSystemProvider features={{ newColorsBranding: true }}>
             <CustomModalLayout
-                primaryButtonText="Send Message"
-                primaryButtonProps={{disabled: !phoneNumber}}
-                secondaryButtonText="Cancel"
-                onCloseButtonClick={() => dashboard.closeModal()}
-                primaryButtonOnClick={() => {
-                    const whatsappResponse = handleWhatsappMessage(contactName!, selectedProduct.value, phoneNumber!, controlledMessageForInputArea)
-                    console.log(whatsappResponse)
-                    dashboard.closeModal();
-                }}
-                secondaryButtonOnClick={() => dashboard.closeModal()}
-                title="Upsell with whatsup"
+                title={title}
                 subtitle="select products to resale"
+                width={width}
+                maxHeight={height}
+                onCloseButtonClick={() => dashboard.closeModal()}
+                secondaryButtonText="Cancel"
+                secondaryButtonOnClick={() => dashboard.closeModal()}
+                primaryButtonText="Send Message"
+                primaryButtonProps={{ disabled: !phoneNumber }}
+                primaryButtonOnClick={() => {
+                    dashboard.closeModal();
+
+                    if (selectedProduct) {
+                        const whatsappLink = generateWhatsappLink(
+                            contactName,
+                            selectedProduct.value,
+                            phoneNumber,
+                            controlledWhatsappMessage
+                        );
+
+                        window.open(whatsappLink);
+                    };
+                }}
                 content={
                     <Box direction="vertical" gap={4}>
-                        {loading ? <Loader size="medium"></Loader> : (
+                        {loading ? <Loader /> : (
                             <>
                                 {!phoneNumber && (
                                     <SectionHelper>
                                         Please add a phone number to the contact to send a message
                                     </SectionHelper>
                                 )}
-                                <FormField label={"Select an item:"}>
+                                <FormField label={"Select an item"}>
                                     <RadioGroup
-                                        value={selectedProduct.id || ''}
-                                        key={selectedProduct.id}
-                                        onChange={(prodId) => {
-                                            const product = productOptionsList.find(p => {
-                                                return p.id === prodId;
+                                        key={selectedProduct?.id}
+                                        value={selectedProduct?.id}
+                                        onChange={(id) => {
+                                            const product = productOptionsList.find(product => {
+                                                return product.id === id;
                                             });
-                                            setSelectedProduct(product!);
-                                        }
-                                        }
+
+                                            if (product) {
+                                                setSelectedProduct(product);
+                                            };
+                                        }}
                                     >
                                         {productOptionsList.map((product) => {
-                                            return (<RadioGroup.Radio value={product.id}>
-                                                <Box gap={2} verticalAlign="middle">
-                                                    <Image
-                                                        width={'45px'}
-                                                        height={'45px'}
-                                                        src={getImageFromWixMedia(product.image)}/>
-                                                    <Box direction="vertical">
+                                            return (
+                                                <RadioGroup.Radio
+                                                    key={product.id}
+                                                    value={product.id}
+                                                >
+                                                    <Box gap={2} verticalAlign="middle">
+                                                        <Image
+                                                            width={'45px'}
+                                                            height={'45px'}
+                                                            src={media.getImageUrl(product.image).url}
+                                                        />
                                                         <Text weight="normal">{product.value}</Text>
                                                     </Box>
-                                                </Box>
-                                            </RadioGroup.Radio>)
+                                                </RadioGroup.Radio>
+                                            )
                                         })}
                                     </RadioGroup>
                                 </FormField>
-                                <Divider skin="light"/>
+                                <Divider skin="light" />
                                 <FormField label="WhatsApp message to the user">
                                     <InputArea
                                         minHeight={'270px'}
-                                        placeholder=""
                                         rows={6}
                                         maxLength={500}
                                         hasCounter
                                         resizable
-                                        value={controlledMessageForInputArea}
+                                        value={controlledWhatsappMessage}
                                         onChange={(e) => setControlledWhatsappMessage(e.target.value)}
                                     />
                                 </FormField>
@@ -145,7 +155,4 @@ const Modal: FC<{ orderId: string }> = (props) => {
     );
 };
 
-const getImageFromWixMedia = (productImage:string) => {
-    return media.getImageUrl(productImage).url;
-}
 export default Modal;
