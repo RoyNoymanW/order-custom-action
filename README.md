@@ -90,7 +90,7 @@ The development environment is set up for hot reloading, so any changes you make
 
   [screenshot]()
 
-3. Click the **More actions** button, and then select **Post-Order Messaging** from the menu.
+3. Click the **More actions** button, and then select **Sell with WhatsAPP** from the menu.
 
 
   [screenshot]()
