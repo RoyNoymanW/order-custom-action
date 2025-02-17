@@ -1,7 +1,7 @@
 {
   "$schema": "https://dev.wix.com/wix-cli/schemas/dashboard-modal.json",
   "id": "3259acd9-9b12-4f5d-9ace-737a5eb73876",
-  "title": "Upsell with whatsup",
+  "title": "Sell with WhatsApp",
   "width": 600,
   "height": 900
 }

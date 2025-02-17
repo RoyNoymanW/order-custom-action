@@ -19,7 +19,7 @@ import {
 import '@wix/design-system/styles.global.css';
 import { height, width, title } from './modal.json';
 import { getContactNameFromOrder, getPhoneNumberFromOrder } from "../../../utils/get-details-from-order";
-import { generateWhatsappLink, generateWhatsappUpsellMessage } from '../../../utils/whatsapp-link-generator';
+import { generateWhatsappLink, generateWhatsappMessage } from '../../../utils/whatsapp-link-generator';
 
 type Product = {
     id: string;
@@ -34,7 +34,7 @@ const Modal: FC<{ orderId: string }> = ({ orderId }) => {
     const [phoneNumber, setPhoneNumber] = useState<string>('');
     const [contactName, setContactName] = useState<string>('');
     const [controlledWhatsappMessage, setControlledWhatsappMessage] = useState<string>(
-        selectedProduct ? generateWhatsappUpsellMessage(contactName, selectedProduct.value) : ''
+        selectedProduct ? generateWhatsappMessage(contactName, selectedProduct.value) : ''
     );
 
     useEffect(() => {
@@ -70,7 +70,7 @@ const Modal: FC<{ orderId: string }> = ({ orderId }) => {
         <WixDesignSystemProvider features={{ newColorsBranding: true }}>
             <CustomModalLayout
                 title={title}
-                subtitle="select products to resale"
+                subtitle="Select products to sell"
                 width={width}
                 maxHeight={height}
                 onCloseButtonClick={() => dashboard.closeModal()}
