@@ -20,11 +20,11 @@ This Wix app template incorporates the following features:
 
 - **Wix CLI:** Get a comprehensive developer experience with minimal setup and host your app on Wix with one command. Learn more about the [Wix CLI for apps](https://dev.wix.com/docs/build-apps/developer-tools/cli/get-started/about-the-wix-cli-for-apps).
 - **Wix Design System:** Utilize Wix's reusable React components for a cohesive user experience consistent with Wix's design standards.
-- **Wix eCommerce Orders API**: Access and manage Wix eCommerce Orders data on a Wix site (this data is for orders made through the Wix Stores app). Learn more about the [Wix eCommerce API](https://dev.wix.com/docs/sdk/backend-modules/ecom/introduction).
+- **Wix eCommerce Orders API**: Access and manage Wix eCommerce Orders data on a Wix site. (The eCom Orders API is for use with all Wix eCommerce flows, but in this case it's for use with products sold via Stores). Learn more about the [Wix eCommerce API](https://dev.wix.com/docs/sdk/backend-modules/ecom/introduction).
 - **Backend API**: Define your own HTTP functions that can be called from your frontend code. Learn more about [Backend APIs](https://dev.wix.com/docs/build-apps/develop-your-app/frameworks/wix-cli/supported-extensions/backend-extensions/api/add-api-extensions-with-the-cli).
 - **Dashboard modal:** Extend your Wix app's functionality by adding modals to your app's dashboard. Learn more about [Dashboard modals](https://dev.wix.com/docs/build-apps/develop-your-app/frameworks/wix-cli/supported-extensions/dashboard-extensions/dashboard-modals/add-dashboard-modal-extensions-with-the-cli).
-- **Dashboard menu plugin:** Extend your Wix app's functionality by adding menu plugins to the user interfaces of an apps built by Wix. Learn more about [Dashboard menu plugin extensions](https://dev.wix.com/docs/build-apps/develop-your-app/extensions/dashboard-extensions/dashboard-plugins/dashboard-menu-plugins/dashboard-menu-plugin-extensions).
-- **WhatsApp integration:** Prepare personalized WhatsApp messages to customers from within your app.
+- **Dashboard menu plugin:** Extend your Wix app's functionality by adding menu plugins to the user interface of an app built by Wix. Learn more about [Dashboard menu plugin extensions](https://dev.wix.com/docs/build-apps/develop-your-app/extensions/dashboard-extensions/dashboard-plugins/dashboard-menu-plugins/dashboard-menu-plugin-extensions).
+- **WhatsApp integration:** Prepare personalized WhatsApp messages to customers from within your app. These messages are loaded into WhatsApp, but must be sent manually.
 
 ## Prerequisites
 
@@ -32,7 +32,7 @@ Before getting started, make sure you have the following set up:
 
 + [Node.js](https://nodejs.org/en/) (v18.16.0 or higher)
 + [A Wix developer account](https://users.wix.com/signin?loginDialogContext=signup&referralInfo=HEADER&postLogin=https:%2F%2Fdev.wix.com%2Fdc3%2Fmy-apps&postSignUp=https:%2F%2Fdev.wix.com%2Fdc3%2Fmy-apps&forceRender=true)
-+ A WhatsApp account.
++ A WhatsApp account
 
 ## Local Development
 
@@ -42,19 +42,19 @@ We first need to create local files for our app project and set up a local devel
 
 Run the following command to create a new app project using this template:
 
-```tsx
+```bash
 [fill this in]
 ```
 
 In the creation process, you will be asked for:
 
-+ A **Wix app name**. This is the name that appears for your app in the Wix Dev Center.
++ A **Wix app name**. This is the name that appears for your app in the App Dashboard.
 + A test site to install your app on. You can select an existing site or create a new development site.
 + A **package name**. This is the name of the package created locally for your project, and the name of the directory containing your project’s local files.
 
 ### What you get
 
-This process registers a new app in the Wix Dev Center with the required permissions pre-configured, and it generates a new app project in your local file system. The project contains all the files your app needs to run locally and in production.
+This process registers a new app in the App Dashboard with the required permissions pre-configured, and it generates a new app project in your local file system. The project contains all the files your app needs to run locally and in production.
 
 The project includes:
 
@@ -116,7 +116,7 @@ Customize the dashboard modal to fit your specific needs, whether it's updating 
 
 Development entry point: [`template/src/dashboard/modals/sell-message-modal/modal.tsx`](./template/src/dashboard/modals/sell-message-modal/modal.tsx)
 
-### Customize the WhatsApp integration
+### Customize the messaging integration
 
 Customize how your app interacts with WhatsApp, or replace WhatsApp entirely with another messaging service.
 
