@@ -67,6 +67,8 @@ The project includes:
 
 ## Step 2 | Test the app
 
+The app creation process installs the app on your chosen development site. However, there is still some configuration required before your app will function.
+
 ### Install the Wix Stores app
 
 This app makes calls to the Wix eCommerce [Orders API](https://dev.wix.com/docs/sdk/backend-modules/ecom/orders/setup) to retrieve the latest orders made in the site’s store. Before you test this app on your development site, install the [Wix Stores app](https://www.wix.com/app-market/wix-stores) to [add the Wix eCommerce platform’s functionality](https://dev.wix.com/docs/rest/business-solutions/e-commerce/wix-e-commerce-platform-handbook/get-started/installation) to your site.
